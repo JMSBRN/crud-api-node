@@ -1,11 +1,13 @@
 import { createServer } from 'http';
 import { env, stdout } from 'process';
 import dotenv from 'dotenv';
+import { setResponseNotFound } from './utils';
 import * as user from './users';
 
 const { getUsers } = user;
 dotenv.config();
 const { PORT } = env;
+const port = PORT || 5000;
 const server = () => {
   createServer((req, res) => {
     switch (req.method) {
@@ -13,14 +15,11 @@ const server = () => {
         getUsers(req, res);
         break;
       default:
-        res.statusCode = 404;
-        res.setHeader('Content-Type', 'application/json');
-        res.write(JSON.stringify({ title: 'NO FOUND', message: 'Rout not found' }));
-        res.end();
+        setResponseNotFound(res);
         break;
     }
-  }).listen(PORT, () => {
-    stdout.write(`server running on port Localhost :${PORT}`);
+  }).listen(port, () => {
+    stdout.write(`server running on port Localhost :${port}`);
   });
 };
 
