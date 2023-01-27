@@ -1,3 +1,3 @@
-import server from './services/server';
+import server from './server';
 
 server();
