@@ -1,5 +1,5 @@
 import { setResponseNotFound } from './utils';
-import { ServerListener } from './interfaces';
+import { IUser, ServerListener } from './interfaces';
 import users from './data/users.json';
 
 export const getUsers: ServerListener = async (req, res) => {
@@ -10,11 +10,17 @@ export const getUsers: ServerListener = async (req, res) => {
     res.end();
   } else if (id) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
+    const newArr:IUser[] = [];
     users.forEach((el) => {
       if (el.id === id) {
-        res.write(JSON.stringify(el));
+        newArr.push(el);
       }
     });
+    if (newArr.length) {
+      res.write(JSON.stringify(newArr));
+    } else {
+      res.write(JSON.stringify({ title: 'ERROR', message: 'User not Found' }));
+    }
     res.end();
   } else {
     setResponseNotFound(res);
