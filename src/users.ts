@@ -1,9 +1,10 @@
 import { ServerListener } from './interfaces';
+import users from './data/users.json';
 
 export const getUsers: ServerListener = async (req, res) => {
   if (req.url === '/api/users') {
     res.setHeader('Content-Type', 'application/json');
-    res.write(JSON.stringify({ name: 'Alex' }));
+    res.write(JSON.stringify(users));
     res.end();
   } else {
     res.statusCode = 404;

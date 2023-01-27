@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import { env, stdout } from 'process';
 import dotenv from 'dotenv';
-import * as user from './user';
+import * as user from './users';
 
 const { getUsers } = user;
 dotenv.config();
