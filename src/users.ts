@@ -1,6 +1,9 @@
+import { v4 as uuidv4 } from 'uuid';
 import { setResponseNotFound } from './utils';
 import { IUser, ServerListener } from './interfaces';
 import users from './data/users.json';
+
+uuidv4();
 
 export const getUsers: ServerListener = async (req, res) => {
   const id = req.url?.split('/')[3];
@@ -10,7 +13,7 @@ export const getUsers: ServerListener = async (req, res) => {
     res.end();
   } else if (id) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    const newArr:IUser[] = [];
+    const newArr: IUser[] = [];
     users.forEach((el) => {
       if (el.id === id) {
         newArr.push(el);
