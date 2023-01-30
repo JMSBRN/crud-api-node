@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { setCheckIsIUser } from './helpers';
 import { setResponseNotFound } from './utils';
 import { IUser, ServerListener } from './interfaces';
 import json from './data/users.json';
@@ -48,13 +49,20 @@ export const createUser: ServerListener = async (req, res) => {
       .on('end', () => {
         try {
           const user = JSON.parse(body);
+          const isUser: boolean = setCheckIsIUser(user);
           user.id = uuidv4();
-          users.push(user);
-          res.writeHead(201, { 'Content-Type': 'application/json' });
-          res.end();
+          if (isUser) {
+            users.push(user);
+            res.writeHead(201, { 'Content-Type': 'application/json' });
+            res.end();
+          } else {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.write(JSON.stringify({ title: 'ERROR', message: 'Bbody does not contain required fields' }));
+            res.end();
+          }
         } catch (error) {
           res.writeHead(400, { 'Content-Type': 'text/plain' });
-          res.write('Bad Post Data.  Is your data a proper JSON?\n');
+          res.write('Bad body Data.  Is your data a proper JSON?\n');
           res.end();
         }
       });
