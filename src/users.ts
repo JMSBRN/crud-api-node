@@ -50,14 +50,14 @@ export const createUser: ServerListener = async (req, res) => {
         try {
           const user = JSON.parse(body);
           const isUser: boolean = setCheckIsIUser(user);
-          user.id = uuidv4();
+          const userWithId = { id: uuidv4(), ...user };
           if (isUser) {
-            users.push(user);
+            users.push(userWithId);
             res.writeHead(201, { 'Content-Type': 'application/json' });
             res.end();
           } else {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
-            res.write(JSON.stringify({ title: 'ERROR', message: 'Bbody does not contain required fields' }));
+            res.write(JSON.stringify({ title: 'ERROR', message: 'Body does not contain required fields' }));
             res.end();
           }
         } catch (error) {
