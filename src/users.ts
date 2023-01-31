@@ -136,22 +136,21 @@ export const deleteUser: ServerListener = async (req, res) => {
   const regexp: RegExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
   if (baseUrl === '/api/users/' && regexp.test(reqId || '')) {
     const newArr: IUser[] = [];
-    res.writeHead(200, { 'Content-Type': 'application/json' });
     users.forEach((el) => {
       if (el.id === reqId) {
         newArr.push(el);
       }
     });
     if (newArr.length) {
-      // delete user
       const newUsers = users.splice(users.findIndex((el) => el.id === reqId), 1);
-      writeFile(join(cwd(), './data/users.json'), JSON.stringify(newUsers), () => {});
+      writeFile(join(cwd(), 'src/data/', 'users.json'), JSON.stringify(newUsers), (err) => { if (err) throw err; });
+      res.writeHead(204, { 'Content-Type': 'application/json' });
+      res.end();
     } else {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.write(JSON.stringify({ title: 'ERROR', message: 'User not Found' }));
       res.end();
     }
-    res.end();
   } else {
     if (!regexp.test(reqId || '')) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
