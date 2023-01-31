@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import { env, stdout } from 'process';
 import dotenv from 'dotenv';
-import { setResponseNotFound } from './utils';
+import { setResponseWithErrorMessage } from './utils';
 import * as user from './users';
 
 const {
@@ -26,7 +26,7 @@ const server = () => {
         deleteUser(req, res);
         break;
       default:
-        setResponseNotFound(res);
+        setResponseWithErrorMessage(404, res, { title: 'NO FOUND', message: 'Route not found' });
         break;
     }
   }).listen(port, () => {

@@ -3,45 +3,27 @@ import { writeFile } from 'fs';
 import { join } from 'path';
 import { cwd } from 'process';
 import { setCheckIsIUser } from './helpers';
-import { setResponseNotFound } from './utils';
+import { setResponseWithErrorMessage, getUsersFromResponse, getUserByIdFromResponse } from './utils';
 import { IUser, ServerListener } from './interfaces';
 import json from './data/users.json';
+import { regexp } from './constants';
 
 const users: IUser[] = json;
+
 export const getUsers: ServerListener = async (req, res) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const id = req.url?.split('/')[3];
-  const regexp: RegExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
   if (req.url === '/api/users') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.write(JSON.stringify(users));
-    res.end();
+    await getUsersFromResponse(res, users);
+  } else if (!regexp.test(id || '')) {
+    setResponseWithErrorMessage(400, res, { title: 'NO FOUND', message: 'ID not Valid' });
   } else if (baseUrl === '/api/users/' && regexp.test(id || '')) {
-    const newArr: IUser[] = [];
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    users.forEach((el) => {
-      if (el.id === id) {
-        newArr.push(el);
-      }
-    });
-    if (newArr.length) {
-      res.write(JSON.stringify(newArr));
-    } else {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.write(JSON.stringify({ title: 'ERROR', message: 'User not Found' }));
-      res.end();
-    }
-    res.end();
+    await getUserByIdFromResponse(req, res, users);
   } else {
-    if (!regexp.test(id || '')) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.write(JSON.stringify({ title: 'ERROR', message: 'UUID not valid' }));
-      res.end();
-      return;
-    }
-    setResponseNotFound(res);
+    setResponseWithErrorMessage(404, res, { title: 'NO FOUND', message: 'Route not found' });
   }
 };
+
 export const createUser: ServerListener = async (req, res) => {
   if (req.url === '/api/users') {
     let body = '';
@@ -59,26 +41,20 @@ export const createUser: ServerListener = async (req, res) => {
             res.writeHead(201, { 'Content-Type': 'application/json' });
             res.end();
           } else {
-            res.writeHead(400, { 'Content-Type': 'text/plain' });
-            res.write(JSON.stringify({ title: 'ERROR', message: 'Body does not contain required fields' }));
-            res.end();
+            setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'Body does not contain required fields' });
           }
         } catch (error) {
-          res.writeHead(400, { 'Content-Type': 'text/plain' });
-          res.write('Bad body Data.  Is your data a proper JSON?\n');
-          res.end();
+          setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'Bad body Data.  Is your data a proper JSON?\n' });
         }
       });
   } else {
-    setResponseNotFound(res);
+    setResponseWithErrorMessage(404, res, { title: 'NO FOUND', message: 'Route not found' });
   }
 };
 
 export const updateUser:ServerListener = async (req, res) => {
-  // find user by id
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const reqId = req.url?.split('/')[3];
-  const regexp: RegExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
   if (baseUrl === '/api/users/' && regexp.test(reqId || '')) {
     const newArr: IUser[] = [];
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -88,7 +64,6 @@ export const updateUser:ServerListener = async (req, res) => {
       }
     });
     if (newArr.length) {
-      // res.write(JSON.stringify(newArr));
       let body = '';
       req
         .on('data', (data) => {
@@ -104,36 +79,27 @@ export const updateUser:ServerListener = async (req, res) => {
               res.writeHead(201, { 'Content-Type': 'application/json' });
               res.end();
             } else {
-              res.writeHead(400, { 'Content-Type': 'text/plain' });
-              res.write(JSON.stringify({ title: 'ERROR', message: 'Body does not contain required fields' }));
-              res.end();
+              setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'Body does not contain required fields' });
             }
           } catch (error) {
-            res.writeHead(400, { 'Content-Type': 'text/plain' });
-            res.write('Bad body Data.  Is your data a proper JSON?\n');
-            res.end();
+            setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'Bad body data' });
           }
         });
     } else {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.write(JSON.stringify({ title: 'ERROR', message: 'User not Found' }));
-      res.end();
+      setResponseWithErrorMessage(404, res, { title: 'ERROR', message: 'User not Found' });
     }
     res.end();
   } else {
     if (!regexp.test(reqId || '')) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.write(JSON.stringify({ title: 'ERROR', message: 'UUID not valid' }));
-      res.end();
+      setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'UUID not valid' });
       return;
     }
-    setResponseNotFound(res);
+    setResponseWithErrorMessage(404, res, { title: 'NO FOUND', message: 'Route not found' });
   }
 };
 export const deleteUser: ServerListener = async (req, res) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const reqId = req.url?.split('/')[3];
-  const regexp: RegExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
   if (baseUrl === '/api/users/' && regexp.test(reqId || '')) {
     const newArr: IUser[] = [];
     users.forEach((el) => {
@@ -147,17 +113,13 @@ export const deleteUser: ServerListener = async (req, res) => {
       res.writeHead(204, { 'Content-Type': 'application/json' });
       res.end();
     } else {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.write(JSON.stringify({ title: 'ERROR', message: 'User not Found' }));
-      res.end();
+      setResponseWithErrorMessage(404, res, { title: 'ERROR', message: 'User not Found' });
     }
   } else {
     if (!regexp.test(reqId || '')) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.write(JSON.stringify({ title: 'ERROR', message: 'UUID not valid' }));
-      res.end();
+      setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'UUID not valid' });
       return;
     }
-    setResponseNotFound(res);
+    setResponseWithErrorMessage(404, res, { title: 'NO FOUND', message: 'Route not found' });
   }
 };
