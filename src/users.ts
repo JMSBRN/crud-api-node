@@ -1,4 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
+import { writeFile } from 'fs';
+import { join } from 'path';
+import { cwd } from 'process';
 import { setCheckIsIUser } from './helpers';
 import { setResponseNotFound } from './utils';
 import { IUser, ServerListener } from './interfaces';
@@ -127,4 +130,35 @@ export const updateUser:ServerListener = async (req, res) => {
     setResponseNotFound(res);
   }
 };
-export const deleteUser = async () => {};
+export const deleteUser: ServerListener = async (req, res) => {
+  const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
+  const reqId = req.url?.split('/')[3];
+  const regexp: RegExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
+  if (baseUrl === '/api/users/' && regexp.test(reqId || '')) {
+    const newArr: IUser[] = [];
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    users.forEach((el) => {
+      if (el.id === reqId) {
+        newArr.push(el);
+      }
+    });
+    if (newArr.length) {
+      // delete user
+      const newUsers = users.splice(users.findIndex((el) => el.id === reqId), 1);
+      writeFile(join(cwd(), './data/users.json'), JSON.stringify(newUsers), () => {});
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.write(JSON.stringify({ title: 'ERROR', message: 'User not Found' }));
+      res.end();
+    }
+    res.end();
+  } else {
+    if (!regexp.test(reqId || '')) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.write(JSON.stringify({ title: 'ERROR', message: 'UUID not valid' }));
+      res.end();
+      return;
+    }
+    setResponseNotFound(res);
+  }
+};

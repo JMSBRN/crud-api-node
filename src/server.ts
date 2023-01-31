@@ -23,7 +23,7 @@ const server = () => {
         updateUser(req, res);
         break;
       case 'DELETE':
-        deleteUser();
+        deleteUser(req, res);
         break;
       default:
         setResponseNotFound(res);
