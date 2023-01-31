@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 import { setResponseNotFound } from './utils';
 import * as user from './users';
 
-const { getUsers, createUser, updateUser, deleteUser } = user;
+const {
+  getUsers, createUser, updateUser, deleteUser,
+} = user;
 dotenv.config();
 const { PORT } = env;
 const port = PORT || 5000;
@@ -18,7 +20,7 @@ const server = () => {
         createUser(req, res);
         break;
       case 'PUT':
-        updateUser();
+        updateUser(req, res);
         break;
       case 'DELETE':
         deleteUser();
