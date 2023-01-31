@@ -3,7 +3,12 @@ import { writeFile } from 'fs';
 import { join } from 'path';
 import { cwd } from 'process';
 import { setCheckIsIUser } from './helpers';
-import { setResponseWithErrorMessage, getUsersFromResponse, getUserByIdFromResponse } from './utils';
+import {
+  setResponseWithErrorMessage,
+  getUsersFromResponse,
+  getUserByIdFromResponse,
+  createUserWithResponse,
+} from './utils';
 import { IUser, ServerListener } from './interfaces';
 import json from './data/users.json';
 import { regexp } from './constants';
@@ -72,15 +77,7 @@ export const updateUser:ServerListener = async (req, res) => {
         .on('end', () => {
           try {
             const user = JSON.parse(body);
-            const isUser: boolean = setCheckIsIUser(user);
-            if (isUser) {
-              // update user with body request
-              Object.assign(users[users.findIndex((el) => el.id === reqId)], user);
-              res.writeHead(201, { 'Content-Type': 'application/json' });
-              res.end();
-            } else {
-              setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'Body does not contain required fields' });
-            }
+            createUserWithResponse(res, users, user);
           } catch (error) {
             setResponseWithErrorMessage(400, res, { title: 'ERROR', message: 'Bad body data' });
           }
