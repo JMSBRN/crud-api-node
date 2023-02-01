@@ -1,10 +1,11 @@
 import { writeFile } from 'fs';
-import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponse } from 'http';
 import { join } from 'path';
 import { cwd } from 'process';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ErrorBadData,
+  ErrorIdNotValid,
   ErrorNotUser,
   ErrorNoUsers,
   regexp,
@@ -16,12 +17,14 @@ import {
   IErrorMessage,
   IUser,
   ResponseWithErrorMessage,
+  ResponseWithUserAndUsers,
+  ResponseWithUsers,
 } from './interfaces';
 
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
   res,
-  obj:IErrorMessage,
+  obj: IErrorMessage,
 ) => {
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ titleText: obj.title, messagetext: obj.message }));
@@ -36,31 +39,31 @@ export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) 
     setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNoUsers);
   }
 };
-export const getUserByIdFromResponse = async (
-  req: IncomingMessage,
-  res: ServerResponse,
-  users: IUser[],
-) => {
+export const getUserByIdFromResponse: ResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   const newArr: IUser[] = [];
-  if (users.length > 0) {
-    res.writeHead(StatusCode.SUCCESS, { 'Content-Type': 'application/json' });
-    users.forEach((el) => {
-      if (el.id === id) {
-        newArr.push(el);
-      }
-      if (newArr.length > 0) {
-        res.write(JSON.stringify(newArr));
-        res.end();
-      } else {
-        setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNotUser);
-      }
-    });
+  if (regexp.test(id || '')) {
+    if (users.length > 0) {
+      res.writeHead(StatusCode.SUCCESS, { 'Content-Type': 'application/json' });
+      users.forEach((el) => {
+        if (el.id === id) {
+          newArr.push(el);
+        }
+        if (newArr.length > 0) {
+          res.write(JSON.stringify(newArr));
+          res.end();
+        } else {
+          setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNotUser);
+        }
+      });
+    } else {
+      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNoUsers);
+    }
   } else {
-    setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNoUsers);
+    setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorIdNotValid);
   }
 };
-export const createUserWithResponse = async (res: ServerResponse, users: IUser[], user: IUser) => {
+export const createUserWithResponse: ResponseWithUserAndUsers = async (res, users, user) => {
   const isUser: boolean = setCheckIsIUser(user);
   const userWithId = { id: uuidv4(), ...user };
   if (isUser) {
@@ -71,11 +74,7 @@ export const createUserWithResponse = async (res: ServerResponse, users: IUser[]
     setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
   }
 };
-export const updateUserWIthResponse = async (
-  req: IncomingMessage,
-  res: ServerResponse,
-  users: IUser[],
-) => {
+export const updateUserWIthResponse: ResponseWithUsers = async (req, res, users) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const reqId = req.url?.split('/')[3];
   if (baseUrl === '/api/users/' && regexp.test(reqId || '')) {
@@ -86,8 +85,13 @@ export const updateUserWIthResponse = async (
       }
     });
     if (newArr.length) {
-      const newUsers = users.splice(users.findIndex((el) => el.id === reqId), 1);
-      writeFile(join(cwd(), 'src/data/', 'users.json'), JSON.stringify(newUsers), (err) => { if (err) throw err; });
+      const newUsers = users.splice(
+        users.findIndex((el) => el.id === reqId),
+        1,
+      );
+      writeFile(join(cwd(), 'src/data/', 'users.json'), JSON.stringify(newUsers), (err) => {
+        if (err) throw err;
+      });
       res.writeHead(StatusCode.NOT_CONTENT, { 'Content-Type': 'application/json' });
       res.end();
     } else {
@@ -98,12 +102,15 @@ export const updateUserWIthResponse = async (
 
 export const bodyParser: BodyParserType = async (req, res) => new Promise((resolve, reject) => {
   let body = '';
-  req.on('data', (data) => {
-    body += data;
-  }).on('end', () => {
-    resolve(JSON.parse(body));
-  }).on('error', (error: string) => {
-    reject(error);
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
-  });
+  req
+    .on('data', (data) => {
+      body += data;
+    })
+    .on('end', () => {
+      resolve(JSON.parse(body));
+    })
+    .on('error', (error: string) => {
+      reject(error);
+      setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
+    });
 });

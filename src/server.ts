@@ -4,9 +4,7 @@ import dotenv from 'dotenv';
 import { setResponseWithErrorMessage } from './utils';
 import * as user from './users';
 
-const {
-  getUsers, createUser, updateUser, deleteUser,
-} = user;
+const { getUsers, createUser, updateUser, deleteUser } = user;
 dotenv.config();
 const { PORT } = env;
 const port = PORT || 5000;

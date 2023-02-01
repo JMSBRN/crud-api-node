@@ -21,5 +21,14 @@ export type ResponseWithErrorMessage = (
   res: ServerResponse,
   obj: IErrorMessage
 ) => void;
-
 export type BodyParserType = (req: IncomingMessage, res: ServerResponse) => Promise<IUser>;
+export type ResponseWithUsers = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  users: IUser[]
+) => Promise<void>;
+export type ResponseWithUserAndUsers = (
+  res: ServerResponse,
+  users: IUser[],
+  user: IUser,
+) => Promise<void>;

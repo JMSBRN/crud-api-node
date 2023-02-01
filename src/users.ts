@@ -26,12 +26,10 @@ export const getUsers: ServerListener = async (req, res) => {
   const id = req.url?.split('/')[3];
   if (req.url === '/api/users') {
     await getUsersFromResponse(res, users);
-  } else if (!regexp.test(id || '')) {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, { title: 'NO FOUND', message: 'ID not Valid' });
-  } else if (baseUrl === '/api/users/' && regexp.test(id || '')) {
+  } else if (baseUrl === '/api/users/' && id) {
     await getUserByIdFromResponse(req, res, users);
   } else {
-    setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, { title: 'NO FOUND', message: 'Route not found' });
+    setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorRouteNotFound);
   }
 };
 
@@ -48,7 +46,7 @@ export const createUser: ServerListener = async (req, res) => {
   }
 };
 
-export const updateUser:ServerListener = async (req, res) => {
+export const updateUser: ServerListener = async (req, res) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const reqId = req.url?.split('/')[3];
   if (baseUrl === '/api/users/' && regexp.test(reqId || '')) {
