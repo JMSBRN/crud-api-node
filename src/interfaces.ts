@@ -21,3 +21,5 @@ export type ResponseWithErrorMessage = (
   res: ServerResponse,
   obj: IErrorMessage
 ) => void;
+
+export type BodyParserType = (req: IncomingMessage, res: ServerResponse) => Promise<IUser>;

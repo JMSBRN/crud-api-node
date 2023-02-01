@@ -11,7 +11,12 @@ import {
   StatusCode,
 } from './constants';
 import { setCheckIsIUser } from './helpers';
-import { IErrorMessage, IUser, ResponseWithErrorMessage } from './interfaces';
+import {
+  BodyParserType,
+  IErrorMessage,
+  IUser,
+  ResponseWithErrorMessage,
+} from './interfaces';
 
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
@@ -90,3 +95,15 @@ export const updateUserWIthResponse = async (
     }
   }
 };
+
+export const bodyParser: BodyParserType = async (req, res) => new Promise((resolve, reject) => {
+  let body = '';
+  req.on('data', (data) => {
+    body += data;
+  }).on('end', () => {
+    resolve(JSON.parse(body));
+  }).on('error', (error: string) => {
+    reject(error);
+    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
+  });
+});

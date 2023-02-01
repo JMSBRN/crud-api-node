@@ -5,6 +5,7 @@ import {
   getUserByIdFromResponse,
   createUserWithResponse,
   updateUserWIthResponse,
+  bodyParser,
 } from './utils';
 import { IUser, ServerListener } from './interfaces';
 import json from './data/users.json';
@@ -36,19 +37,12 @@ export const getUsers: ServerListener = async (req, res) => {
 
 export const createUser: ServerListener = async (req, res) => {
   if (req.url === '/api/users') {
-    let body = '';
-    req
-      .on('data', (data) => {
-        body += data.toString();
-      })
-      .on('end', () => {
-        try {
-          const user = JSON.parse(body);
-          createUserWithResponse(res, users, user);
-        } catch (error) {
-          setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
-        }
-      });
+    try {
+      const user = await bodyParser(req, res);
+      createUserWithResponse(res, users, user);
+    } catch (error) {
+      setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
+    }
   } else {
     setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorRouteNotFound);
   }
@@ -66,27 +60,20 @@ export const updateUser:ServerListener = async (req, res) => {
       }
     });
     if (newArr.length) {
-      let body = '';
-      req
-        .on('data', (data) => {
-          body += data.toString();
-        })
-        .on('end', () => {
-          try {
-            const user = JSON.parse(body);
-            const isUser: boolean = setCheckIsIUser(user);
-            if (isUser) {
-              // update user with body request
-              Object.assign(users[users.findIndex((el) => el.id === reqId)], user);
-              res.writeHead(StatusCode.CREATED, { 'Content-Type': 'application/json' });
-              res.end();
-            } else {
-              setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorNoFields);
-            }
-          } catch (error) {
-            setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
-          }
-        });
+      try {
+        const user = await bodyParser(req, res);
+        const isUser: boolean = setCheckIsIUser(user);
+        if (isUser) {
+          // update user with body request
+          Object.assign(users[users.findIndex((el) => el.id === reqId)], user);
+          res.writeHead(StatusCode.CREATED, { 'Content-Type': 'application/json' });
+          res.end();
+        } else {
+          setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorNoFields);
+        }
+      } catch (error) {
+        setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
+      }
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNotUser);
     }
