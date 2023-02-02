@@ -29,7 +29,7 @@ export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   obj: IErrorMessage,
 ) => {
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ titleText: obj.title, messageText: obj.message }));
+  res.end(JSON.stringify({ statusCode: 500, titleText: obj.title, messageText: obj.message }));
 };
 
 export const bodyParser: BodyParserType = async (req, res) => new Promise((resolve, reject) => {

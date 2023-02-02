@@ -7,6 +7,7 @@ export interface IUser {
   hobbies: string[];
 }
 export interface IErrorMessage {
+  statusCode?: number;
   title: string;
   message: string;
 }
