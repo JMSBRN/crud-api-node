@@ -1,10 +1,3 @@
-console.log('hi');
+import server from './server';
 
-
-
-
-
-
-
-
-
+server();
