@@ -4,6 +4,7 @@ import { join } from 'path';
 import { cwd } from 'process';
 import { v4 as uuidv4 } from 'uuid';
 import {
+  DEFAULT_HEADER,
   ErrorBadData,
   ErrorIdNotValid,
   ErrorNoRequiredFields,
@@ -28,7 +29,7 @@ export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   res,
   obj: IErrorMessage,
 ) => {
-  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  res.writeHead(statusCode, DEFAULT_HEADER);
   res.end(JSON.stringify({ statusCode: 500, titleText: obj.title, messageText: obj.message }));
 };
 
@@ -49,7 +50,7 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
 
 export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) => {
   if (users.length > 0) {
-    res.writeHead(StatusCode.SUCCESS, { 'Content-Type': 'application/json' });
+    res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
     res.write(JSON.stringify(users));
     res.end();
   } else {
@@ -61,7 +62,7 @@ export const getUserByIdFromResponse: ResponseWithUsers = async (req, res, users
   const newArr: IUser[] = [];
   if (regexp.test(id || '')) {
     if (users.length > 0) {
-      res.writeHead(StatusCode.SUCCESS, { 'Content-Type': 'application/json' });
+      res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
       users.forEach((el) => {
         if (el.id === id) {
           newArr.push(el);
@@ -85,7 +86,7 @@ export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user
   const userWithId = { id: uuidv4(), ...user };
   if (isUser) {
     users.push(userWithId);
-    res.writeHead(StatusCode.CREATED, { 'Content-Type': 'application/json' });
+    res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
     res.end();
   } else {
     setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorNoRequiredFields);
@@ -96,7 +97,7 @@ export const updateUserWithresponse:ResponseWithUsers = async (req, res, users) 
   const id = req.url?.split('/')[3];
   const newArr: IUser[] = [];
   if (regexp.test(id || '')) {
-    res.writeHead(StatusCode.SUCCESS, { 'Content-Type': 'application/json' });
+    res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
     users.forEach((el) => {
       if (el.id === id) {
         newArr.push(el);
@@ -140,7 +141,7 @@ export const deleteUserWIthResponse: ResponseWithUsers = async (req, res, users)
       writeFile(join(cwd(), 'src/data/', 'users.json'), JSON.stringify(newUsers || [testUser]), (err) => {
         if (err) throw err;
       });
-      res.writeHead(StatusCode.NOT_CONTENT, { 'Content-Type': 'application/json' });
+      res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
       res.end();
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNotUser);
