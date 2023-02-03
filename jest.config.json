@@ -1,0 +1,9 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "setupFiles": ["dotenv/config"],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/constants.ts"
+    ]
+  }

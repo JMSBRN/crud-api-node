@@ -1,4 +1,11 @@
-!.*.js
-**/package-lock.json
-**/dist/**
-**/coverage/**
+
+# Ignore artifacts:
+    build
+    dist
+    coverage
+
+# Ignore all HTML files:
+    *.html
+
+    .gitignore
+    .prettierignore
