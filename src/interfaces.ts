@@ -6,21 +6,25 @@ export interface IUser {
   age: number;
   hobbies: string[];
 }
-export interface IErrorMessage {
-  statusCode?: number;
-  title: string;
-  message: string;
-}
 export interface IError {
+  readonly statusCode: number;
   readonly title: string;
   readonly message: string;
+}
+export interface IErrorMessages {
+  noUser: IError;
+  noUsers: IError;
+  badBodyData: IError;
+  badUUID: IError;
+  badRout: IError;
+  nowReqFields: IError;
 }
 
 export type ServerListener = RequestListener<typeof IncomingMessage, typeof ServerResponse>;
 export type ResponseWithErrorMessage = (
   statusCode: number,
   res: ServerResponse,
-  obj: IErrorMessage
+  obj: IError
 ) => void;
 export type BodyParserType = (req: IncomingMessage, res: ServerResponse) => Promise<IUser>;
 export type ResponseWithUsers = (

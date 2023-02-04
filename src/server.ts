@@ -3,6 +3,7 @@ import { env, stdout } from 'process';
 import dotenv from 'dotenv';
 import { setResponseWithErrorMessage } from './utils';
 import * as user from './users';
+import { errorMessages } from './constants';
 
 const {
   getUsers,
@@ -29,7 +30,7 @@ const server = () => {
         deleteUser(req, res);
         break;
       default:
-        setResponseWithErrorMessage(404, res, { title: 'NO FOUND', message: 'Route not found' });
+        setResponseWithErrorMessage(404, res, errorMessages.badRout);
         break;
     }
   }).listen(port, () => {

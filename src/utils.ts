@@ -5,11 +5,7 @@ import { cwd } from 'process';
 import { v4 as uuidv4 } from 'uuid';
 import {
   DEFAULT_HEADER,
-  ErrorBadData,
-  ErrorIdNotValid,
-  ErrorNoRequiredFields,
-  ErrorNotUser,
-  ErrorNoUsers,
+  errorMessages,
   regexp,
   StatusCode,
   testUser,
@@ -17,20 +13,23 @@ import {
 import { setCheckIsIUser } from './helpers';
 import {
   BodyParserType,
-  IErrorMessage,
+  IError,
   IUser,
   ResponseWithErrorMessage,
   ResponseWithUserAndUsers,
   ResponseWithUsers,
 } from './interfaces';
 
+const { badBodyData, noUsers, noUser, badUUID, badRout, nowReqFields } = errorMessages;
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
   res,
-  obj: IErrorMessage,
+  obj: IError,
 ) => {
-  res.writeHead(statusCode, DEFAULT_HEADER);
-  res.end(JSON.stringify({ statusCode: 500, titleText: obj.title, messageText: obj.message }));
+    res.writeHead(statusCode, DEFAULT_HEADER);
+    if (obj) {
+      res.end(JSON.stringify(obj));
+    }
 };
 
 export const bodyParser: BodyParserType = async (req, res) => new Promise((resolve, reject) => {
@@ -44,7 +43,7 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
     })
     .on('error', (error: string) => {
       reject(error);
-      setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
+      setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badBodyData);
     });
 });
 
@@ -54,7 +53,7 @@ export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) 
     res.write(JSON.stringify(users));
     res.end();
   } else {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorNoUsers);
+    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, noUsers);
   }
 };
 export const getUserByIdFromResponse: ResponseWithUsers = async (req, res, users) => {
@@ -72,13 +71,13 @@ export const getUserByIdFromResponse: ResponseWithUsers = async (req, res, users
         res.write(JSON.stringify(newArr));
         res.end();
       } else {
-        setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNotUser);
+        setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
       }
     } else {
-      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNoUsers);
+      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUsers);
     }
   } else {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorIdNotValid);
+    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badUUID );
   }
 };
 export const createUserWithResponse: ResponseWithUserAndUsers = async (res, users, user) => {
@@ -89,7 +88,7 @@ export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user
     res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
     res.end();
   } else {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorNoRequiredFields);
+    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, nowReqFields);
   }
 };
 
@@ -117,14 +116,14 @@ export const updateUserWithresponse:ResponseWithUsers = async (req, res, users) 
           }
         })
         .on('error', () => {
-          setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorBadData);
+          setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badBodyData);
         });
       res.end();
     } else {
-      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNotUser);
+      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }
   } else {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, ErrorIdNotValid);
+    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badUUID);
   }
 };
 export const deleteUserWIthResponse: ResponseWithUsers = async (req, res, users) => {
@@ -144,9 +143,9 @@ export const deleteUserWIthResponse: ResponseWithUsers = async (req, res, users)
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
       res.end();
     } else {
-      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorNotUser);
+      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }
   } else {
-    setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, ErrorIdNotValid);
+    setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, badUUID);
   }
 };
