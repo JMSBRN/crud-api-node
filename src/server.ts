@@ -14,8 +14,8 @@ const {
 dotenv.config();
 const { PORT } = env;
 const port = PORT || 5000;
-const server = () => {
-  createServer((req, res) => {
+
+ const server = createServer((req, res) => {
     switch (req.method) {
       case 'GET':
         getUsers(req, res);
@@ -36,6 +36,5 @@ const server = () => {
   }).listen(port, () => {
     stdout.write(`server running on port Localhost :${port}`);
   });
-};
 
 export default server;

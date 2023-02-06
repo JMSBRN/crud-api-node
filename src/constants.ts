@@ -18,7 +18,6 @@ export enum StatusCode {
   'NOT_CONTENT' = 204,
 }
 export const testUser: IUser = {
-  id: 'test',
   username: 'test',
   age: 18,
   hobbies: [
