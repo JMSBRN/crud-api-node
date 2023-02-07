@@ -6,9 +6,9 @@ import { testUser } from "../mocks/testUser";
 const r = supertest(server);
 
 describe('testing POST request',()=> {
-    afterAll( async () => {
-    await promisify(server.close.bind(server))();
-    });
+  afterEach(() => { 
+    server.close(); 
+});
     it('POST request with correct body data', async ()=> {
       await  r
         .post('/api/users')

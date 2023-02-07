@@ -5,9 +5,9 @@ import { testUser } from "../mocks/testUser";
 
 describe('testing GET requests are woking correctly ',() => {
     const r = supertest(server);
-    afterAll(async () => {
-        await promisify(server.close.bind(server))();
-       });
+    afterEach(() => { 
+      server.close(); 
+  });
     it('should GET get users with empty array', async ()=> {
         await r
              .get('/api/users')
