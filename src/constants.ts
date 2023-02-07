@@ -3,7 +3,7 @@ import { IErrorMessages, IUser } from './interfaces';
 export const regexp: RegExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
 export const errorMessages: IErrorMessages = {
   noUser: { statusCode: 500, title: 'ERROR', message: 'User not Found' },
-  noUsers: { statusCode: 500, title: 'ERROR', message: 'Users not found' },
+  noUsers: { statusCode: 500, title: 'ERROR', message: 'Users not Found' },
   badBodyData: { statusCode: 500, title: 'ERROR', message: 'Bad body data' },
   badUUID: { statusCode: 500, title: 'ERROR', message: 'UUID not valid' },
   badRout: { statusCode: 500, title: 'ERROR', message: 'Oops! Route not Found' },
@@ -17,10 +17,4 @@ export enum StatusCode {
   'CREATED' = 201,
   'NOT_CONTENT' = 204,
 }
-export const testUser: IUser = {
-  username: 'test',
-  age: 18,
-  hobbies: [
-    'test',
-  ],
-};
+

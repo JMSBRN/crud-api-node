@@ -8,8 +8,8 @@ import {
   errorMessages,
   regexp,
   StatusCode,
-  testUser,
 } from './constants';
+import {testUser} from '../tests/mocks/testUser'
 import { setCheckIsIUser } from './helpers';
 import {
   BodyParserType,
@@ -86,7 +86,7 @@ export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user
   if (isUser) {
     users.push(userWithId);
     res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
-    res.end();
+    res.end(JSON.stringify({message: 'User was created'}));
   } else {
     setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, nowReqFields);
   }
@@ -136,12 +136,12 @@ export const deleteUserWIthResponse: ResponseWithUsers = async (req, res, users)
       }
     });
     if (newArr.length > 0) {
-      const newUsers = users.length > 1 && users.splice(users.findIndex((el) => el.id === id), 1);
+      const newUsers = users.splice(users.findIndex((el) => el.id === id), 1);
       writeFile(join(cwd(), 'src/data/', 'users.json'), JSON.stringify(newUsers || [testUser]), (err) => {
         if (err) throw err;
       });
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
-      res.end();
+      res.end(JSON.stringify({message: 'User was deleted'}));
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }
