@@ -18,6 +18,7 @@ export interface IErrorMessages {
   badUUID: IError;
   badRout: IError;
   nowReqFields: IError;
+  userExist: IError;
 }
 
 export type ServerListener = RequestListener<typeof IncomingMessage, typeof ServerResponse>;

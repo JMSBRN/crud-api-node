@@ -9,7 +9,7 @@ import {
   regexp,
   StatusCode,
 } from './constants';
-import {testUser} from '../tests/mocks/testUser'
+import { testUser } from '../tests/mocks/testUser'
 import { setCheckIsIUser } from './helpers';
 import {
   BodyParserType,
@@ -20,16 +20,16 @@ import {
   ResponseWithUsers,
 } from './interfaces';
 
-const { badBodyData, noUsers, noUser, badUUID, badRout, nowReqFields } = errorMessages;
+const { badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist } = errorMessages;
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
   res,
   obj: IError,
 ) => {
-    res.writeHead(statusCode, DEFAULT_HEADER);
-    if (obj) {
-      res.end(JSON.stringify(obj));
-    }
+  res.writeHead(statusCode, DEFAULT_HEADER);
+  if (obj) {
+    res.end(JSON.stringify(obj));
+  }
 };
 
 export const bodyParser: BodyParserType = async (req, res) => new Promise((resolve, reject) => {
@@ -77,22 +77,33 @@ export const getUserByIdFromResponse: ResponseWithUsers = async (req, res, users
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUsers);
     }
   } else {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badUUID );
+    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badUUID);
   }
 };
 export const createUserWithResponse: ResponseWithUserAndUsers = async (res, users, user) => {
-  const isUser: boolean = setCheckIsIUser(user);
-  const userWithId = { id: uuidv4(), ...user };
-  if (isUser) {
-    users.push(userWithId);
-    res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
-    res.end(JSON.stringify({message: 'User was created'}));
+  let newArr: IUser[] = [];
+  users.forEach((el) => {
+    if (el.username === user.username) {
+      newArr.push(el);
+    }
+  });
+  if (!newArr.length) {
+    const isUser: boolean = setCheckIsIUser(user);
+    const userWithId = { id: uuidv4(), ...user };
+    if (isUser) {
+      users.push(userWithId);
+      res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
+      res.end(JSON.stringify({ message: 'User was created' }));
+
+    } else {
+      setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, nowReqFields);
+    }
   } else {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, nowReqFields);
+    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, userExist);
   }
 };
 
-export const updateUserWithresponse:ResponseWithUsers = async (req, res, users) => {
+export const updateUserWithresponse: ResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   const newArr: IUser[] = [];
   if (regexp.test(id || '')) {
@@ -141,7 +152,7 @@ export const deleteUserWIthResponse: ResponseWithUsers = async (req, res, users)
         if (err) throw err;
       });
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
-      res.end(JSON.stringify({message: 'User was deleted'}));
+      res.end(JSON.stringify({ message: 'User was deleted' }));
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }

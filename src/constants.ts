@@ -8,6 +8,7 @@ export const errorMessages: IErrorMessages = {
   badUUID: { statusCode: 500, title: 'ERROR', message: 'UUID not valid' },
   badRout: { statusCode: 500, title: 'ERROR', message: 'Oops! Route not Found' },
   nowReqFields: { statusCode: 500, title: 'ERROR', message: 'does not contain required fields' },
+  userExist: { statusCode: 500, title: 'ERROR', message: 'User already exist' },
 }
 export const DEFAULT_HEADER = { 'Content-Type': 'application/json' };
 export enum StatusCode {
