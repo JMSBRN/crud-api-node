@@ -1,5 +1,4 @@
 import supertest from "supertest"
-import { promisify } from "util";
 import server from "../../src"
 import { testUser } from "../mocks/testUser";
 
@@ -17,6 +16,28 @@ describe('testing POST request',()=> {
         .expect(201)
         .then((r) => {
           expect(r.body).toHaveProperty('message', 'User was created');
+        })
+    });
+    it('POST request with not correct user keys', async ()=> {
+      await  r
+        .post('/api/users')
+        .set('Accept', 'application/json')
+        .send(JSON.stringify({
+          test: 'test'
+        }))
+        .expect(400)
+        .then((r) => {
+          expect(r.body).toHaveProperty('message', 'does not contain required fields');
+        })
+    });
+    it('POST request with not correct body data', async ()=> {
+      await  r
+        .post('/api/users')
+        .set('Accept', 'application/json')
+        .send('test')
+        .expect(400)
+        .then((r) => {
+          expect(r.body).toHaveProperty('message', 'Body data is no correct');
         })
     });
 

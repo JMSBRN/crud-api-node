@@ -37,9 +37,13 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
   req
     .on('data', (data) => {
       body += data;
-    })
+  })
     .on('end', () => {
-      resolve(JSON.parse(body));
+      try {
+        resolve(JSON.parse(body));
+      } catch (error) {
+        setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badBodyData);
+      }
     })
     .on('error', (error: string) => {
       reject(error);

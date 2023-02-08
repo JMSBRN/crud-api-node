@@ -1,5 +1,4 @@
 import supertest from "supertest";
-import { promisify } from "util"
 import server from "../../src"
 import { testUser } from "../mocks/testUser";
 

@@ -1,8 +1,7 @@
 import supertest from "supertest";
-import { promisify } from "util";
 import server from "../../src";
 
-describe('',() => {
+describe('testing DELETE request',() => {
     const r = supertest(server);
     afterEach(() => { 
         server.close(); 
