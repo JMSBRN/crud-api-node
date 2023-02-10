@@ -6,6 +6,7 @@
   "scripts": {
     "start:prod": "npm run build && node dist/index.js",
     "start:dev": "npx nodemon",
+    "start:multi": "ts-node src/cluster.ts ",
     "build": "tsc",
     "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --write src/**",

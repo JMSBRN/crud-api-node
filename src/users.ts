@@ -9,10 +9,7 @@ import {
 } from './utils';
 import { IUser, ServerListener } from './interfaces';
 import json from './data/users.json';
-import {
-  errorMessages,
-  StatusCode,
-} from './constants';
+import { errorMessages, StatusCode } from './constants';
 
 const users: IUser[] = json;
 const { badRout, badBodyData } = errorMessages;

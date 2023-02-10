@@ -36,5 +36,5 @@ export type ResponseWithUsers = (
 export type ResponseWithUserAndUsers = (
   res: ServerResponse,
   users: IUser[],
-  user: IUser,
+  user: IUser
 ) => Promise<void>;

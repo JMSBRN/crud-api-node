@@ -1,7 +1,7 @@
 import { writeFile } from 'fs';
 import { ServerResponse } from 'http';
 import { join } from 'path';
-import { cwd } from 'process';
+import { cwd, stdout } from 'process';
 import { v4 as uuidv4 } from 'uuid';
 import {
   DEFAULT_HEADER,
@@ -9,7 +9,7 @@ import {
   regexp,
   StatusCode,
 } from './constants';
-import { testUser } from '../tests/mocks/testUser'
+import { testUser } from '../tests/mocks/testUser';
 import { setCheckIsIUser } from './helpers';
 import {
   BodyParserType,
@@ -20,7 +20,12 @@ import {
   ResponseWithUsers,
 } from './interfaces';
 
-const { badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist } = errorMessages;
+const {
+  badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
+} = errorMessages;
+export const stdoutWrite = (msg: string) => {
+  stdout.write(`${msg}`);
+};
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
   res,
@@ -37,7 +42,7 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
   req
     .on('data', (data) => {
       body += data;
-  })
+    })
     .on('end', () => {
       try {
         resolve(JSON.parse(body));
@@ -85,7 +90,7 @@ export const getUserByIdFromResponse: ResponseWithUsers = async (req, res, users
   }
 };
 export const createUserWithResponse: ResponseWithUserAndUsers = async (res, users, user) => {
-  let newArr: IUser[] = [];
+  const newArr: IUser[] = [];
   users.forEach((el) => {
     if (el.username === user.username) {
       newArr.push(el);
@@ -98,7 +103,6 @@ export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user
       users.push(userWithId);
       res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
       res.end(JSON.stringify({ message: 'User was created' }));
-
     } else {
       setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, nowReqFields);
     }
@@ -151,10 +155,17 @@ export const deleteUserWIthResponse: ResponseWithUsers = async (req, res, users)
       }
     });
     if (newArr.length > 0) {
-      const newUsers = users.splice(users.findIndex((el) => el.id === id), 1);
-      writeFile(join(cwd(), 'src/data/', 'users.json'), JSON.stringify(newUsers || [testUser]), (err) => {
-        if (err) throw err;
-      });
+      const newUsers = users.splice(
+        users.findIndex((el) => el.id === id),
+        1,
+      );
+      writeFile(
+        join(cwd(), 'src/data/', 'users.json'),
+        JSON.stringify(newUsers || [testUser]),
+        (err) => {
+          if (err) throw err;
+        },
+      );
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
       res.end(JSON.stringify({ message: 'User was deleted' }));
     } else {
