@@ -1,14 +1,14 @@
 import cluster from 'cluster';
-import http from 'http';
 import { cpus } from 'os';
 import process from 'process';
+import server from './index';
 import { stdoutWrite } from './utils';
 
 const numCPUs = cpus().length;
 
 if (cluster.isPrimary) {
   stdoutWrite(`Primary ${process.pid} is running \n`);
-
+  server.listen(4000);
   for (let i = 0; i < numCPUs; i += 1) {
     cluster.fork();
   }
@@ -25,10 +25,7 @@ if (cluster.isPrimary) {
 } else {
   process.on('message', (msg: string) => {
     const num = Number(msg);
-    http.createServer((req, res) => {
-      res.writeHead(200);
-      res.end('hello world\n');
-    }).listen(4000 + num);
+    server.listen(4000 + num);
   });
   if (process.send) {
     process.send('');
