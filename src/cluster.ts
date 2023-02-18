@@ -1,33 +1,49 @@
 import cluster from 'cluster';
+import { createServer } from 'http';
 import { cpus } from 'os';
 import process from 'process';
-import server from './index';
+import serverWorker from './index';
 import { stdoutWrite } from './utils';
 
 const numCPUs = cpus().length;
+let nextWorker = 0;
 
 if (cluster.isPrimary) {
-  stdoutWrite(`Primary ${process.pid} is running \n`);
-  server.listen(4000);
+  stdoutWrite(`Master ${process.pid} is running`);
+
   for (let i = 0; i < numCPUs; i += 1) {
     cluster.fork();
   }
-  cluster.on('message', (workers, message) => {
-    workers.send(`${workers.id}`);
-    stdoutWrite(`${message}\n`);
+
+  cluster.on('exit', (worker, code, signal) => {
+    stdoutWrite(`Worker ${worker.process.pid} died with code ${code} and signal ${signal}`);
+    stdoutWrite('Starting a new worker');
+    cluster.fork();
   });
-  cluster.on('exit', (worker) => {
-    stdoutWrite(`worker ${worker.process.pid} died`);
+
+  const server = createServer((req, res) => {
+    const worker = cluster.workers![nextWorker];
+    if (worker) {
+      worker.send({ type: 'request' });
+      nextWorker = (nextWorker + 1) % numCPUs;
+    } else {
+      res.statusCode = 500;
+      res.end('No available workers');
+    }
   });
-  cluster.on('listening', (worker, address) => {
-    stdoutWrite(`worker id ${worker.id} ${worker.process.pid} is now connected to ${address.port}\n`);
-  });
+
+  server.listen(4000);
 } else {
-  process.on('message', (msg: string) => {
-    const num = Number(msg);
-    server.listen(4000 + num);
+  process.on('message', (msg: { type: string }) => {
+    if (msg.type === 'request') {
+      const workerId = cluster.worker?.id || 0;
+      serverWorker.listen(4001 + workerId, () => {
+        if (serverWorker) {
+          if (serverWorker.address() !== null) {
+            stdoutWrite(`Worker ${process.pid} is running`);
+          }
+        }
+      });
+    }
   });
-  if (process.send) {
-    process.send('');
-  }
 }
