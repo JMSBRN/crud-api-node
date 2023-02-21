@@ -1,6 +1,8 @@
 import { errorMessages } from '../constants';
 import { ServerListener } from '../interfaces';
-import { getUsers, createUser, updateUser, deleteUser } from '../users';
+import {
+  getUsers, createUser, updateUser, deleteUser,
+} from '../users';
 import { setResponseWithErrorMessage } from '../utils';
 
 const routes: ServerListener = (req, res) => {
