@@ -24,7 +24,7 @@ const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
 } = errorMessages;
 export const stdoutWrite = (msg: string) => {
-  stdout.write(`${msg}`);
+  stdout.write(`${msg}\n`);
 };
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
