@@ -6,10 +6,10 @@ import {
   deleteUserWIthResponse,
   bodyParser,
   updateUserWithresponse,
-} from './utils';
+} from './users.service';
 import { IUser, ServerListener } from './interfaces';
-import json from './data/users.json';
-import { errorMessages, StatusCode } from './constants';
+import json from '../../data/users.json';
+import { errorMessages, StatusCode } from '../../constants';
 
 const users: IUser[] = json;
 const { badRout, badBodyData } = errorMessages;

@@ -1,12 +1,13 @@
 import { createServer, IncomingHttpHeaders, request } from 'http';
-import routes from './routes/routes';
-import { stdoutWrite } from './utils';
+import { StatusCode } from '../constants';
+import routes from '../features/users/routes/routes';
+import { stdoutWrite } from '../helpers';
 
 export default function createWorker(port: number) {
   const server = createServer((req, res) => {
     stdoutWrite(`worker pid ${process.pid}, method ${JSON.stringify(req.method)} port: ${JSON.stringify(port)}`);
     routes(req, res);
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(StatusCode.SUCCESS, { 'Content-Type': 'application/json' });
     res.end();
   });
 

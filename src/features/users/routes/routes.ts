@@ -1,9 +1,9 @@
-import { errorMessages } from '../constants';
+import { errorMessages, StatusCode } from '../../../constants';
 import { ServerListener } from '../interfaces';
 import {
   getUsers, createUser, updateUser, deleteUser,
-} from '../users';
-import { setResponseWithErrorMessage } from '../utils';
+} from '../users.controller';
+import { setResponseWithErrorMessage } from '../users.service';
 
 const routes: ServerListener = (req, res) => {
   switch (req.method) {
@@ -20,7 +20,7 @@ const routes: ServerListener = (req, res) => {
       deleteUser(req, res);
       break;
     default:
-      setResponseWithErrorMessage(404, res, errorMessages.badRout);
+      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, errorMessages.badRout);
       break;
   }
 };

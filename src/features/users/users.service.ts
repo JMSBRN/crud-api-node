@@ -1,16 +1,16 @@
 import { writeFile } from 'fs';
 import { ServerResponse } from 'http';
 import { join } from 'path';
-import { cwd, stdout } from 'process';
+import { cwd } from 'process';
 import { v4 as uuidv4 } from 'uuid';
 import {
   DEFAULT_HEADER,
   errorMessages,
   regexp,
   StatusCode,
-} from './constants';
-import { testUser } from '../tests/mocks/testUser';
-import { setCheckIsIUser } from './helpers';
+} from '../../constants';
+import { testUser } from '../../../tests/mocks/testUser';
+import { setCheckIsIUser } from '../../helpers';
 import {
   BodyParserType,
   IError,
@@ -23,9 +23,7 @@ import {
 const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
 } = errorMessages;
-export const stdoutWrite = (msg: string) => {
-  stdout.write(`${msg}\n`);
-};
+
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
   res,
