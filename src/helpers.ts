@@ -10,3 +10,8 @@ export const setCheckIsIUser = (user: IUser): boolean => {
 export const stdoutWrite = (msg: string) => {
   stdout.write(`${msg}\n`);
 };
+
+export const checkArgValue = (argIndex: number, expectedValue: string) => {
+  const argValue = process.argv[argIndex];
+  return argValue === expectedValue;
+};
