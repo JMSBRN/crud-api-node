@@ -7,20 +7,18 @@ import {
   bodyParser,
   updateUserWithresponse,
 } from './users.service';
-import { IUser, ServerListener } from './interfaces';
-import json from '../../data/users.json';
+import { ServerListener } from './interfaces';
 import { errorMessages, StatusCode } from '../../constants';
 
-const users: IUser[] = json;
 const { badRout, badBodyData } = errorMessages;
 
 export const getUsers: ServerListener = async (req, res) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const id = req.url?.split('/')[3];
   if (req.url === '/api/users') {
-    await getUsersFromResponse(res, users);
+    await getUsersFromResponse(res);
   } else if (baseUrl === '/api/users/' && id) {
-    await getUserByIdFromResponse(req, res, users);
+    await getUserByIdFromResponse(req, res);
   } else {
     setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, badRout);
   }
@@ -29,7 +27,7 @@ export const createUser: ServerListener = async (req, res) => {
   if (req.url === '/api/users') {
     try {
       const user = await bodyParser(req, res);
-      createUserWithResponse(res, users, user);
+      createUserWithResponse(res, user);
     } catch (error) {
       setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badBodyData);
     }
@@ -41,7 +39,7 @@ export const updateUser: ServerListener = async (req, res) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const id = req.url?.split('/')[3];
   if (baseUrl === '/api/users/' && id) {
-    await updateUserWithresponse(req, res, users);
+    await updateUserWithresponse(req, res);
   }
   setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, badRout);
 };
@@ -49,7 +47,7 @@ export const deleteUser: ServerListener = async (req, res) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
   const id = req.url?.split('/')[3];
   if (baseUrl === '/api/users/' && id) {
-    await deleteUserWIthResponse(req, res, users);
+    await deleteUserWIthResponse(req, res);
   }
   setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, badRout);
 };

@@ -28,13 +28,16 @@ export type ResponseWithErrorMessage = (
   obj: IError
 ) => void;
 export type BodyParserType = (req: IncomingMessage, res: ServerResponse) => Promise<IUser>;
-export type ResponseWithUsers = (
+export type RequestResponse = (
   req: IncomingMessage,
   res: ServerResponse,
-  users: IUser[]
 ) => Promise<void>;
-export type ResponseWithUserAndUsers = (
+export type RequestResponseWithUser = (
+  req: IncomingMessage,
   res: ServerResponse,
-  users: IUser[],
+  user: IUser
+) => Promise<void>;
+export type ResponseWithUser = (
+  res: ServerResponse,
   user: IUser
 ) => Promise<void>;
