@@ -1,7 +1,7 @@
 import http from 'http';
 import { Worker } from 'cluster';
-import { stdoutWrite } from '../helpers';
 import routes from '../features/users/routes/routes';
+import { stdoutWrite } from '../helpers';
 
 export default function createLoadBalancer(workers: Worker[], port: number) {
   let index = 0;

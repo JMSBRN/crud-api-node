@@ -1,6 +1,6 @@
 import { ServerResponse } from 'http';
 import { v4 as uuidv4 } from 'uuid';
-import base from '../../data/database';
+
 import {
   DEFAULT_HEADER,
   errorMessages,
@@ -17,7 +17,7 @@ import {
   ResponseWithUser,
 } from './interfaces';
 
-const database: IUser[] = base;
+const database: IUser[] = [];
 
 const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
