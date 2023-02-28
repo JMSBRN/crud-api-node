@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
-import { cwd, env } from 'process';
+import { env } from 'process';
 import cluster, { Worker } from 'cluster';
 import os from 'os';
-import { fork } from 'child_process';
-import { join } from 'path';
 import server from '../server';
 import { checkArgValue, stdoutWrite } from '../helpers';
 import createLoadBalancer from './loadBalancer.';
@@ -32,16 +30,6 @@ export const clusterApp = () => {
           workers.splice(workers.indexOf(worker), 1, newWorker);
         });
       }
-      const child = fork(join(cwd(), 'src/data/', 'db.ts'));
-      let myObject: { type: string; data: number[] } = { type: 'type', data: [] };
-      child.send(myObject);
-
-      child.on('message', (msg: { type: string; data: number[] }) => {
-        myObject = msg;
-        // eslint-disable-next-line no-console
-        console.log('Received modified array from child:', myObject);
-      });
-
       createLoadBalancer(workers, port);
     } else {
       createWorker(+process.env.PORT_WORKER!);
