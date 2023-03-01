@@ -4,10 +4,10 @@
   "description": "",
   "main": "src/cluster/cluster.js",
   "scripts": {
-    "start:prod": "npm run build && node dist/app.js",
+    "start:prod": "npm run build && ts-node dist/app.js",
     "start:dev": "npx nodemon",
-    "start:multi": "tsc && node dist/app.js --cluster",
-    "start": "tsc && node dist/app.js",
+    "start:multi": "tsc && ts-node dist/app.js --cluster",
+    "start": "tsc && ts-node dist/app.js",
     "build": "tsc",
     "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --write src/**",

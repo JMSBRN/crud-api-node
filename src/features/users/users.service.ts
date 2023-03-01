@@ -7,7 +7,7 @@ import {
   regexp,
   StatusCode,
 } from '../../constants';
-import { setCheckIsIUser } from '../../helpers';
+import { setCheckIsIUser, stdoutWrite } from '../../helpers';
 import {
   BodyParserType,
   IError,
@@ -18,6 +18,12 @@ import {
 } from './interfaces';
 
 const database: IUser[] = [];
+process.on('message', (msg: { type: string }) => {
+  if (msg.type) {
+    stdoutWrite(`from parrent ${JSON.stringify(msg)}`);
+  }
+  process.send!(JSON.stringify(database));
+});
 
 const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,

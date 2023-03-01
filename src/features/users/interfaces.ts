@@ -20,6 +20,10 @@ export interface IErrorMessages {
   nowReqFields: IError;
   userExist: IError;
 }
+export interface IMessageToChild {
+  type: string;
+  data?: IUser[];
+}
 
 export type ServerListener = RequestListener<typeof IncomingMessage, typeof ServerResponse>;
 export type ResponseWithErrorMessage = (

@@ -1,26 +1,31 @@
-process.on('message', (msg) => {
-  let users = [];
+import { stdoutWrite } from '../helpers';
+import { IUser, IMessageToChild } from '../features/users/interfaces';
+
+let users: IUser[] = [];
+
+process.on('message', (msg: IMessageToChild) => {
   if (msg != null && typeof msg === 'object') {
-    // @ts-ignore
-    // eslint-disable-next-line no-console
-    console.log('Received object from parent:', msg);
-    // @ts-ignore
+    stdoutWrite(`Received object from parent: ${JSON.stringify(msg)}`);
     switch (msg.type) {
       case 'GET':
-        // @ts-ignore
-        users = [1, 2, 3];
         if (process.send) {
           process.send({ ...msg, data: users });
         }
         return;
       case 'POST':
-        // @ts-ignore
+        users = [{
+          id: '1',
+          username: 'name',
+          age: 2,
+          hobbies: [
+            'hobbies',
+          ],
+        }];
         if (process.send) {
           process.send({ ...msg, data: users });
         }
         break;
       default:
-
         break;
     }
   }
