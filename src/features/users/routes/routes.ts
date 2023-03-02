@@ -5,7 +5,7 @@ import {
 } from '../users.controller';
 import { setResponseWithErrorMessage } from '../users.service';
 
-const routes: ServerListener = (req, res) => {
+const routes: ServerListener = async (req, res) => {
   switch (req.method) {
     case 'GET':
       getUsers(req, res);

@@ -7,23 +7,15 @@ import {
   regexp,
   StatusCode,
 } from '../../constants';
-import { setCheckIsIUser, stdoutWrite } from '../../helpers';
+import { setCheckIsIUser } from '../../helpers';
 import {
   BodyParserType,
   IError,
   IUser,
-  RequestResponse,
+  RequestResponseWithUsers,
   ResponseWithErrorMessage,
-  ResponseWithUser,
+  ResponseWithUserAndUsers,
 } from './interfaces';
-
-const database: IUser[] = [];
-process.on('message', (msg: { type: string }) => {
-  if (msg.type) {
-    stdoutWrite(`from parrent ${JSON.stringify(msg)}`);
-  }
-  process.send!(JSON.stringify(database));
-});
 
 const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
@@ -59,22 +51,22 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
     });
 });
 
-export const getUsersFromResponse = async (res: ServerResponse) => {
-  if (database.length > 0) {
+export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) => {
+  if (users.length > 0) {
     res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
-    res.write(JSON.stringify(database));
+    res.write(JSON.stringify(users));
     res.end();
   } else {
     setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, noUsers);
   }
 };
-export const getUserByIdFromResponse: RequestResponse = async (req, res) => {
+export const getUserByIdFromResponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   const newArr: IUser[] = [];
   if (regexp.test(id || '')) {
-    if (database.length > 0) {
+    if (users.length > 0) {
       res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
-      database.forEach((el) => {
+      users.forEach((el) => {
         if (el.id === id) {
           newArr.push(el);
         }
@@ -92,9 +84,9 @@ export const getUserByIdFromResponse: RequestResponse = async (req, res) => {
     setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badUUID);
   }
 };
-export const createUserWithResponse: ResponseWithUser = async (res, user) => {
+export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user, users) => {
   const newArr: IUser[] = [];
-  database.forEach((el) => {
+  users.forEach((el) => {
     if (el.username === user.username) {
       newArr.push(el);
     }
@@ -103,7 +95,9 @@ export const createUserWithResponse: ResponseWithUser = async (res, user) => {
     const isUser: boolean = setCheckIsIUser(user);
     const userWithId = { id: uuidv4(), ...user };
     if (isUser) {
-      database.push(userWithId);
+      let w = [...users, userWithId];
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      w = users;
       res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
       res.end(JSON.stringify({ message: 'User was created' }));
     } else {
@@ -114,12 +108,12 @@ export const createUserWithResponse: ResponseWithUser = async (res, user) => {
   }
 };
 
-export const updateUserWithresponse: RequestResponse = async (req, res) => {
+export const updateUserWithresponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   const newArr: IUser[] = [];
   if (regexp.test(id || '')) {
     res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
-    database.forEach((el) => {
+    users.forEach((el) => {
       if (el.id === id) {
         newArr.push(el);
       }
@@ -148,18 +142,18 @@ export const updateUserWithresponse: RequestResponse = async (req, res) => {
     setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badUUID);
   }
 };
-export const deleteUserWIthResponse: RequestResponse = async (req, res) => {
+export const deleteUserWIthResponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   if (regexp.test(id || '')) {
     const newArr: IUser[] = [];
-    database.forEach((el) => {
+    users.forEach((el) => {
       if (el.id === id) {
         newArr.push(el);
       }
     });
     if (newArr.length > 0) {
-      database.splice(
-        database.findIndex((el) => el.id === id),
+      users.splice(
+        users.findIndex((el) => el.id === id),
         1,
       );
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);

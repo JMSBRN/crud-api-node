@@ -36,12 +36,18 @@ export type RequestResponse = (
   req: IncomingMessage,
   res: ServerResponse,
 ) => Promise<void>;
+export type RequestResponseWithUsers = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  users: IUser[],
+) => Promise<void>;
 export type RequestResponseWithUser = (
   req: IncomingMessage,
   res: ServerResponse,
   user: IUser
 ) => Promise<void>;
-export type ResponseWithUser = (
+export type ResponseWithUserAndUsers = (
   res: ServerResponse,
-  user: IUser
+  user: IUser,
+  users: IUser[],
 ) => Promise<void>;
