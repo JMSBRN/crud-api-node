@@ -1,4 +1,7 @@
+import { writeFile } from 'fs';
 import { ServerResponse } from 'http';
+import { join } from 'path';
+import { cwd } from 'process';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -7,7 +10,7 @@ import {
   regexp,
   StatusCode,
 } from '../../constants';
-import { setCheckIsIUser } from '../../helpers';
+import { setCheckIsIUser, stdoutWrite } from '../../helpers';
 import {
   BodyParserType,
   IError,
@@ -21,6 +24,12 @@ const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
 } = errorMessages;
 
+const writeFileDb = async (data: IUser[]) => {
+  writeFile(join(cwd(), 'src/data/', 'database.json'), JSON.stringify(data), (err) => {
+    if (err) throw err;
+    stdoutWrite(JSON.stringify(err));
+  });
+};
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
   res,
@@ -53,6 +62,7 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
 
 export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) => {
   if (users.length > 0) {
+    writeFileDb(users);
     res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
     res.write(JSON.stringify(users));
     res.end();
@@ -95,9 +105,9 @@ export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user
     const isUser: boolean = setCheckIsIUser(user);
     const userWithId = { id: uuidv4(), ...user };
     if (isUser) {
-      let w = [...users, userWithId];
+      const w = [...users, userWithId];
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      w = users;
+      writeFileDb(w);
       res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
       res.end(JSON.stringify({ message: 'User was created' }));
     } else {

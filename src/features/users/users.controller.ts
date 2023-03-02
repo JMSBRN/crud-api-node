@@ -9,17 +9,10 @@ import {
 } from './users.service';
 import { IUser, RequestResponse, ServerListener } from './interfaces';
 import { errorMessages, StatusCode } from '../../constants';
+import db from '../../data/watcher';
 
 const { badRout, badBodyData } = errorMessages;
-const users: IUser[] = [
-  {
-    username: 'from controllers',
-    age: 18,
-    hobbies: [
-      'test',
-    ],
-  },
-];
+const users: IUser[] = db;
 
 export const getUsers: ServerListener = async (req, res) => {
   const baseUrl = req.url?.substring(0, req.url.lastIndexOf('/') + 1);
