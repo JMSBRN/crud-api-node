@@ -11,7 +11,7 @@ import {
   StatusCode,
   USER_CREATED_MSG,
 } from '../../constants';
-import { setCheckIsIUser, stdoutWrite } from '../../helpers';
+import { setCheckIsIUser } from '../../helpers';
 import {
   BodyParserType,
   IError,
@@ -28,7 +28,6 @@ const {
 const updateDb = async (data: IUser[]) => {
   writeFile(join(cwd(), 'src/data/', 'database.json'), JSON.stringify(data), (err) => {
     if (err) throw err;
-    stdoutWrite(`error from updateDb ${JSON.stringify(err)}`);
   });
 };
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (

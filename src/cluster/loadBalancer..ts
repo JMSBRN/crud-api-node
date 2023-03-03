@@ -10,7 +10,6 @@ export default function createLoadBalancer(workers: Worker[], port: number) {
     routes(req, res);
     workers[index].send({ url: req.url, method: req.method, headers: req.headers });
     index = (index + 1) % workers.length;
-    res.end();
   });
 
   server.listen(port, () => {
