@@ -9,6 +9,7 @@ import {
   errorMessages,
   regexp,
   StatusCode,
+  USER_CREATED_MSG,
 } from '../../constants';
 import { setCheckIsIUser, stdoutWrite } from '../../helpers';
 import {
@@ -72,15 +73,10 @@ export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) 
 };
 export const getUserByIdFromResponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
-  const newArr: IUser[] = [];
   if (regexp.test(id || '')) {
     if (users.length > 0) {
       res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
-      users.forEach((el) => {
-        if (el.id === id) {
-          newArr.push(el);
-        }
-      });
+      const newArr = users.filter((el) => el.id === id);
       if (newArr.length > 0) {
         updateDb(users);
         res.write(JSON.stringify(newArr));
@@ -96,20 +92,15 @@ export const getUserByIdFromResponse: RequestResponseWithUsers = async (req, res
   }
 };
 export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user, users) => {
-  const newArr: IUser[] = [];
-  users.forEach((el) => {
-    if (el.username === user.username) {
-      newArr.push(el);
-    }
-  });
+  const newArr = users.filter((el) => el.username === user.username);
   if (!newArr.length) {
     const isUser: boolean = setCheckIsIUser(user);
     const userWithId = { id: uuidv4(), ...user };
     if (isUser) {
-      const w = [...users, userWithId];
-      updateDb(w);
+      const arrWithNewUser = [...users, userWithId];
+      updateDb(arrWithNewUser);
       res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
-      res.end(JSON.stringify({ message: 'User was created' }));
+      res.end(JSON.stringify(USER_CREATED_MSG));
     } else {
       setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, nowReqFields);
     }
@@ -120,14 +111,9 @@ export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user
 
 export const updateUserWithresponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
-  const newArr: IUser[] = [];
   if (regexp.test(id || '')) {
     res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
-    users.forEach((el) => {
-      if (el.id === id) {
-        newArr.push(el);
-      }
-    });
+    const newArr = users.filter((el) => el.id === id);
     if (newArr.length > 0) {
       let body = '';
       req
@@ -139,7 +125,7 @@ export const updateUserWithresponse: RequestResponseWithUsers = async (req, res,
           const isUser = setCheckIsIUser(user);
           if (isUser) {
             Object.assign(newArr[0], user);
-            updateDb(newArr);
+            updateDb(users);
           }
         })
         .on('error', () => {
@@ -156,18 +142,13 @@ export const updateUserWithresponse: RequestResponseWithUsers = async (req, res,
 export const deleteUserWIthResponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   if (regexp.test(id || '')) {
-    const newArr: IUser[] = [];
-    users.forEach((el) => {
-      if (el.id === id) {
-        newArr.push(el);
-      }
-    });
+    const newArr = users.filter((el) => el.id === id);
     if (newArr.length > 0) {
       const index = users.findIndex((el) => el.id === id);
       users.splice(index, 1);
       updateDb(users);
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
-      res.end(JSON.stringify({ message: 'User was deleted' }));
+      res.end(JSON.stringify(USER_CREATED_MSG));
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }

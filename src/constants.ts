@@ -10,6 +10,7 @@ export const errorMessages: IErrorMessages = {
   nowReqFields: { statusCode: 500, title: 'ERROR', message: 'does not contain required fields' },
   userExist: { statusCode: 500, title: 'ERROR', message: 'User already exist' },
 };
+export const USER_CREATED_MSG = { message: 'User was created' };
 export const DEFAULT_HEADER = { 'Content-Type': 'application/json' };
 export enum StatusCode {
   'NOT_FOUND' = 404,
