@@ -24,10 +24,10 @@ const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
 } = errorMessages;
 
-const writeFileDb = async (data: IUser[]) => {
+const updateDb = async (data: IUser[]) => {
   writeFile(join(cwd(), 'src/data/', 'database.json'), JSON.stringify(data), (err) => {
     if (err) throw err;
-    stdoutWrite(JSON.stringify(err));
+    stdoutWrite(`error from updateDb ${JSON.stringify(err)}`);
   });
 };
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
@@ -62,7 +62,7 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
 
 export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) => {
   if (users.length > 0) {
-    writeFileDb(users);
+    updateDb(users);
     res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
     res.write(JSON.stringify(users));
     res.end();
@@ -82,6 +82,7 @@ export const getUserByIdFromResponse: RequestResponseWithUsers = async (req, res
         }
       });
       if (newArr.length > 0) {
+        updateDb(users);
         res.write(JSON.stringify(newArr));
         res.end();
       } else {
@@ -106,8 +107,7 @@ export const createUserWithResponse: ResponseWithUserAndUsers = async (res, user
     const userWithId = { id: uuidv4(), ...user };
     if (isUser) {
       const w = [...users, userWithId];
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      writeFileDb(w);
+      updateDb(w);
       res.writeHead(StatusCode.CREATED, DEFAULT_HEADER);
       res.end(JSON.stringify({ message: 'User was created' }));
     } else {
@@ -139,6 +139,7 @@ export const updateUserWithresponse: RequestResponseWithUsers = async (req, res,
           const isUser = setCheckIsIUser(user);
           if (isUser) {
             Object.assign(newArr[0], user);
+            updateDb(newArr);
           }
         })
         .on('error', () => {
@@ -162,10 +163,9 @@ export const deleteUserWIthResponse: RequestResponseWithUsers = async (req, res,
       }
     });
     if (newArr.length > 0) {
-      users.splice(
-        users.findIndex((el) => el.id === id),
-        1,
-      );
+      const index = users.findIndex((el) => el.id === id);
+      users.splice(index, 1);
+      updateDb(users);
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
       res.end(JSON.stringify({ message: 'User was deleted' }));
     } else {
