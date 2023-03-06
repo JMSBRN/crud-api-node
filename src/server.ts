@@ -7,13 +7,14 @@ import updateDb from './data/utilsDataBase';
 
 dotenv.config();
 const { PORT } = env;
-const port = +PORT! || 5000;
+const port: number = +PORT! || 5000;
 
 const server = () => {
   updateDb([]);
-  createServer((req, res) => {
+  const serverInstance = createServer((req, res) => {
     routes(req, res);
-  }).listen(port, () => {
+  });
+  serverInstance.listen(port, () => {
     stdoutWrite(`server is running on port ${port}`);
   });
 };

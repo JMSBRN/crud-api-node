@@ -7,7 +7,9 @@
       "!src/constants.ts",
       "!src/helpers.ts",
       "!src/routes/routes.ts",
-      "!src/utils.ts"
+      "!src/utils.ts",
+      "!src/data/**",
+      "!src/cluster/**"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/"
