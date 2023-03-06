@@ -1,17 +1,12 @@
-import { createServer } from 'http';
 import supertest from 'supertest';
 import { testUser } from '../mocks/testUser';
-import routes from '../../src/features/users/routes/routes';
 import updateDb from '../../src/data/utilsDataBase';
+import serverForTests from '../mocks/utilsForTests';
 
+const server = supertest(serverForTests);
 describe('testing GET requests are woking correctly', () => {
-  const server = createServer((req, res) => {
-    updateDb([]);
-    routes(req, res);
-  });
-  const r = supertest(server);
   it('should GET get users with empty array', async () => {
-    await r
+    await server
       .get('/api/users')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
@@ -21,7 +16,8 @@ describe('testing GET requests are woking correctly', () => {
       });
   });
   it(' should GET with not correct route', async () => {
-    await r.get('/api/user')
+    await server
+      .get('/api/user')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(404)
@@ -30,7 +26,8 @@ describe('testing GET requests are woking correctly', () => {
       });
   });
   it('should GET get user by id  with not valid id', async () => {
-    await r.get('/api/users/test')
+    await server
+      .get('/api/users/test')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(400)
@@ -41,16 +38,12 @@ describe('testing GET requests are woking correctly', () => {
 });
 
 describe('testing GET requests are woking correctly with exist user in dataBase ', () => {
-  const server = createServer((req, res) => {
-    updateDb([testUser]);
-    routes(req, res);
-  });
-  const r = supertest(server);
   afterAll(() => {
     updateDb([]);
   });
   it('should GET get user by id  with not exist user', async () => {
-    await r.get('/api/users/eb0cd1b8-1c0d-4bca-a201-310df50a4133')
+    await server
+      .get('/api/users/eb0cd1b8-1c0d-4bca-a201-310df50a4133')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(404)
@@ -59,7 +52,8 @@ describe('testing GET requests are woking correctly with exist user in dataBase 
       });
   });
   it('should GET get user by id  with bad UUID user', async () => {
-    await r.get('/api/users/eb0cd1b8-1c0d-4bca-a201-310df50a433')
+    await server
+      .get('/api/users/eb0cd1b8-1c0d-4bca-a201-310df50a433')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(400)
@@ -68,7 +62,8 @@ describe('testing GET requests are woking correctly with exist user in dataBase 
       });
   });
   it('should GET get user by id  with not correct route', async () => {
-    await r.get('/api/test/users/eb0cd1b8-1c0d-4bca-a201-310df50a4133')
+    await server
+      .get('/api/test/users/eb0cd1b8-1c0d-4bca-a201-310df50a4133')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(404)
@@ -77,11 +72,11 @@ describe('testing GET requests are woking correctly with exist user in dataBase 
       });
   });
   it('should GET get users with created user', async () => {
-    await r
+    await server
       .post('/api/users')
       .send(JSON.stringify(testUser))
       .set('Accept', 'application/json');
-    await r
+    await server
       .get('/api/users')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)

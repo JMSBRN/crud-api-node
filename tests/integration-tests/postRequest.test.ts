@@ -1,13 +1,10 @@
 import supertest from 'supertest';
-import server from '../../src/server';
 import { testUser } from '../mocks/testUser';
+import serverForTests from '../mocks/utilsForTests';
 
-const r = supertest(server);
+const r = supertest(serverForTests);
 
 describe('testing POST request', () => {
-  afterEach(() => {
-    server.close();
-  });
   it('POST request with correct body data', async () => {
     await r
       .post('/api/users')
