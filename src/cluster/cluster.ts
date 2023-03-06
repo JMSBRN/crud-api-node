@@ -15,7 +15,7 @@ const numCPUs = os.cpus().length;
 
 export const clusterApp = () => {
   process.on('SIGINT', () => {
-    stdoutWrite('Received SIGINT signal, gracefully stopping the cluster process');
+    stdoutWrite(`Received SIGINT signal, gracefully stopping the cluster process. Worker ${cluster.worker?.process.pid}`);
     gracefulKill();
   });
   const clusterArgv = checkArgValue(2, '--cluster');
