@@ -1,8 +1,6 @@
-import { writeFile } from 'fs';
 import { ServerResponse } from 'http';
-import { join } from 'path';
-import { cwd } from 'process';
 import { v4 as uuidv4 } from 'uuid';
+import updateDb from '../../data/utilsDataBase';
 
 import {
   DEFAULT_HEADER,
@@ -25,11 +23,6 @@ const {
   badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
 } = errorMessages;
 
-const updateDb = async (data: IUser[]) => {
-  writeFile(join(cwd(), 'src/data/', 'database.json'), JSON.stringify(data), (err) => {
-    if (err) throw err;
-  });
-};
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (
   statusCode: number,
   res,
@@ -61,30 +54,22 @@ export const bodyParser: BodyParserType = async (req, res) => new Promise((resol
 });
 
 export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) => {
-  if (users.length > 0) {
-    updateDb(users);
-    res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
-    res.write(JSON.stringify(users));
-    res.end();
-  } else {
-    setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, noUsers);
-  }
+  updateDb(users);
+  res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
+  res.write(JSON.stringify(users));
+  res.end();
 };
 export const getUserByIdFromResponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   if (regexp.test(id || '')) {
-    if (users.length > 0) {
-      res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
-      const newArr = users.filter((el) => el.id === id);
-      if (newArr.length > 0) {
-        updateDb(users);
-        res.write(JSON.stringify(newArr));
-        res.end();
-      } else {
-        setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
-      }
+    res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
+    const newArr = users.filter((el) => el.id === id);
+    if (newArr.length > 0) {
+      updateDb(users);
+      res.write(JSON.stringify(newArr));
+      res.end();
     } else {
-      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUsers);
+      setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }
   } else {
     setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badUUID);

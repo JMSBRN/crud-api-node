@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
-    "types": ["node"],
+    "types": ["node", "jest"],
+    "typeRoots": ["./types", "./node_modules/@types"],
     "baseUrl": "./",
     "paths": {
       "*": ["./src/*"]
@@ -16,6 +17,6 @@
     "noEmit": false,
     "noEmitOnError": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "src/data/db.ts"]
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src/data/db.ts", "**/*.test.ts"]
 }

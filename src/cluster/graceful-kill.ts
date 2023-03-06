@@ -1,8 +1,10 @@
 import cluster, { Worker } from 'cluster';
+import updateDb from '../data/utilsDataBase';
 import { stdoutWrite } from '../helpers';
 
 export function gracefulKill(timeout = 5000): void {
   stdoutWrite('Gracefully stopping the cluster process');
+  updateDb([]);
   if (cluster.workers) {
     Object.values(cluster.workers).forEach((worker: Worker | undefined) => {
     // Gracefully disconnect the worker process
