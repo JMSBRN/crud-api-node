@@ -1,13 +1,11 @@
 import supertest from 'supertest';
-import server from '../../src/server';
+import serverForTests from '../mocks/utilsForTests';
 
 describe('testing DELETE request', () => {
-  const r = supertest(server);
-  afterEach(() => {
-    server.close();
-  });
+  const server = supertest(serverForTests);
+
   it('DELETE request with no exist user', async () => {
-    await r
+    await server
       .delete('/api/users/eb0cd1b8-1c0d-4bca-a201-310df50a4130')
       .send({
         username: 'test_DELETE',
@@ -22,7 +20,7 @@ describe('testing DELETE request', () => {
       });
   });
   it('DELETE request with no valid', async () => {
-    await r
+    await server
       .delete('/api/users/test')
       .send({
         username: 'test_DELETE',
@@ -37,7 +35,7 @@ describe('testing DELETE request', () => {
       });
   });
   it('DELETE request with no correct route', async () => {
-    await r
+    await server
       .delete('/api/test/users/eb0cd1b8-1c0d-4bca-a201-310df50a4130')
       .send({
         username: 'test_DELETE',

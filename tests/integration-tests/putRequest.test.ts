@@ -1,15 +1,12 @@
 import supertest from 'supertest';
-import server from '../../src/server';
 import { testUser } from '../mocks/testUser';
+import serverForTests from '../mocks/utilsForTests';
 
-const r = supertest(server);
+const server = supertest(serverForTests);
 
 describe('testing PUT request', () => {
-  afterEach(() => {
-    server.close();
-  });
   it('PUT request with no correct route ', async () => {
-    await r
+    await server
       .put('/api/test/users/')
       .set('Accept', 'application/json')
       .send(testUser)
@@ -19,7 +16,7 @@ describe('testing PUT request', () => {
       });
   });
   it('PUT request with no valid id ', async () => {
-    await r
+    await server
       .put('/api/users/test')
       .set('Accept', 'application/json')
       .send(testUser)
@@ -29,7 +26,7 @@ describe('testing PUT request', () => {
       });
   });
   it('PUT request with no exist user ', async () => {
-    await r
+    await server
       .put('/api/users/eb0cd1b8-1c0d-4bca-a201-310df50a4130')
       .set('Accept', 'application/json')
       .send(testUser)
