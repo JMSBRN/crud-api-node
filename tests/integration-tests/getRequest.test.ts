@@ -58,6 +58,15 @@ describe('testing GET requests are woking correctly with exist user in dataBase 
         expect(res.body).toHaveProperty('message', 'User not Found');
       });
   });
+  it('should GET get user by id  with bad UUID user', async () => {
+    await r.get('/api/users/eb0cd1b8-1c0d-4bca-a201-310df50a433')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then((res) => {
+        expect(res.body).toHaveProperty('message', 'UUID not valid');
+      });
+  });
   it('should GET get user by id  with not correct route', async () => {
     await r.get('/api/test/users/eb0cd1b8-1c0d-4bca-a201-310df50a4133')
       .set('Accept', 'application/json')
@@ -67,7 +76,7 @@ describe('testing GET requests are woking correctly with exist user in dataBase 
         expect(res.body).toHaveProperty('message', 'Oops! Route not Found');
       });
   });
-  it(' should GET get users with created user', async () => {
+  it('should GET get users with created user', async () => {
     await r
       .post('/api/users')
       .send(JSON.stringify(testUser))
