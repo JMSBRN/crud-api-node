@@ -1,4 +1,5 @@
 import { DEFAULT_HEADER } from '../../../src/constants';
+import updateDb from '../../../src/data/utilsDataBase';
 import { getUserByIdFromResponse } from '../../../src/features/users/users.service';
 
 type MockedResponse = {
@@ -11,6 +12,10 @@ describe('getUserByIdFromResponse', () => {
     writeHead: jest.fn(),
     end: jest.fn(),
   };
+  afterEach(() => {
+    updateDb([]);
+  });
+
   test('response with exist user in data base and with valid UUID', async () => {
     const req = {
       url: '/api/users/77658c22-11ff-4f04-a685-ad69182053f7',

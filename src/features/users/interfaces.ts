@@ -50,7 +50,7 @@ export type RequestResponseWithUser = (
   user: IUser
 ) => Promise<void>;
 export type ResponseWithUserAndUsers = (
-  res: ServerResponse,
+  res: ResponseWithWriteHeadAndEnd,
   user: IUser,
   users: IUser[],
 ) => Promise<void>;
