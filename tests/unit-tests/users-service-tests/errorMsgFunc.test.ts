@@ -1,12 +1,12 @@
-import { DEFAULT_HEADER } from '../../src/constants';
-import { IError } from '../../src/features/users/interfaces';
-import { setResponseWithErrorMessage } from '../../src/features/users/users.service';
+import { DEFAULT_HEADER } from '../../../src/constants';
+import { IError } from '../../../src/features/users/interfaces';
+import { setResponseWithErrorMessage } from '../../../src/features/users/users.service';
 
 type MockedResponse = {
   writeHead: jest.Mock<any, any[]>;
   end: jest.Mock<any, any[]>;
 };
-describe('', () => {
+describe('setResponseWithErrorMessage', () => {
   test('response should have correct status code and headers', () => {
     const statusCode = 404;
     const res: MockedResponse = {

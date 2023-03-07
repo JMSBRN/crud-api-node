@@ -40,8 +40,8 @@ export type RequestResponse = (
   res: ServerResponse,
 ) => Promise<void>;
 export type RequestResponseWithUsers = (
-  req: IncomingMessage,
-  res: ServerResponse,
+  req: Partial<IncomingMessage>,
+  res: ResponseWithWriteHeadAndEnd,
   users: IUser[],
 ) => Promise<void>;
 export type RequestResponseWithUser = (

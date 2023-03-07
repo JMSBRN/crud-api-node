@@ -62,12 +62,11 @@ export const getUsersFromResponse = async (res: ServerResponse, users: IUser[]) 
 export const getUserByIdFromResponse: RequestResponseWithUsers = async (req, res, users) => {
   const id = req.url?.split('/')[3];
   if (regexp.test(id || '')) {
-    res.writeHead(StatusCode.SUCCESS, DEFAULT_HEADER);
+    res.writeHead!(StatusCode.SUCCESS, DEFAULT_HEADER);
     const newArr = users.filter((el) => el.id === id);
     if (newArr.length > 0) {
       updateDb(users);
-      res.write(JSON.stringify(newArr));
-      res.end();
+      res.end(JSON.stringify(newArr));
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }
@@ -101,9 +100,9 @@ export const updateUserWithresponse: RequestResponseWithUsers = async (req, res,
     if (newArr.length > 0) {
       let body = '';
       req
-        .on('data', (data) => {
-          body += data;
-        })
+        .on!('data', (data) => {
+        body += data;
+      })
         .on('end', () => {
           const user = JSON.parse(body);
           const isUser = setCheckIsIUser(user);
