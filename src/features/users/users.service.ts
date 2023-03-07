@@ -20,7 +20,7 @@ import {
 } from './interfaces';
 
 const {
-  badBodyData, noUsers, noUser, badUUID, nowReqFields, userExist,
+  badBodyData, noUser, badUUID, nowReqFields, userExist,
 } = errorMessages;
 
 export const setResponseWithErrorMessage: ResponseWithErrorMessage = (

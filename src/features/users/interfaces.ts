@@ -24,14 +24,17 @@ export interface IMessageToChild {
   type: string;
   data?: IUser[];
 }
-
-export type ServerListener = RequestListener<typeof IncomingMessage, typeof ServerResponse>;
+type ResponseWithWriteHeadAndEnd = {
+  writeHead: ServerResponse<IncomingMessage>['writeHead'];
+  end: ServerResponse<IncomingMessage>['end'];
+} & Partial<ServerResponse<IncomingMessage>>;
 export type ResponseWithErrorMessage = (
   statusCode: number,
-  res: ServerResponse,
+  res: ResponseWithWriteHeadAndEnd,
   obj: IError
 ) => void;
 export type BodyParserType = (req: IncomingMessage, res: ServerResponse) => Promise<IUser>;
+export type ServerListener = RequestListener<typeof IncomingMessage, typeof ServerResponse>;
 export type RequestResponse = (
   req: IncomingMessage,
   res: ServerResponse,

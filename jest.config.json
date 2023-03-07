@@ -9,7 +9,8 @@
       "!src/routes/routes.ts",
       "!src/utils.ts",
       "!src/data/**",
-      "!src/cluster/**"
+      "!src/cluster/**",
+      "!src/app.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/"
