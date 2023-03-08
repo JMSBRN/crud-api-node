@@ -8,6 +8,7 @@ import {
   regexp,
   StatusCode,
   USER_CREATED_MSG,
+  USER_UPDATED_MSG,
 } from '../../constants';
 import { setCheckIsIUser } from '../../helpers';
 import {
@@ -99,22 +100,21 @@ export const updateUserWithresponse: RequestResponseWithUsers = async (req, res,
     const newArr = users.filter((el) => el.id === id);
     if (newArr.length > 0) {
       let body = '';
-      req
-        .on!('data', (data) => {
+      req.on!('data', (data) => {
         body += data;
-      })
-        .on('end', () => {
-          const user = JSON.parse(body);
-          const isUser = setCheckIsIUser(user);
-          if (isUser) {
-            Object.assign(newArr[0], user);
-            updateDb(users);
-          }
-        })
-        .on('error', () => {
-          setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badBodyData);
-        });
-      res.end();
+      });
+      req.on!('end', () => {
+        const user = JSON.parse(body);
+        const isUser = setCheckIsIUser(user);
+        if (isUser) {
+          Object.assign(newArr[0], user);
+          updateDb(users);
+        }
+      });
+      req.on!('error', () => {
+        setResponseWithErrorMessage(StatusCode.BAD_REQUEST, res, badBodyData);
+      });
+      res.end(JSON.stringify(USER_UPDATED_MSG));
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }

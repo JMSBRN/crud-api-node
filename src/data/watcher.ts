@@ -20,15 +20,15 @@ try {
 // Watch for changes in the database file
 fs.watch(join(cwd(), 'src/data/', 'database.json'), (eventType) => {
   if (eventType === 'change') {
-    try {
-      const data = fs.readFileSync(join(cwd(), 'src/data/', 'database.json'), 'utf-8');
+    fs.readFile(join(cwd(), 'src/data/', 'database.json'), 'utf-8', (error, data) => {
+      if (error) {
+        stdoutWrite(`Error updating database: ${error}`);
+      }
       if (data) {
         db.splice(0, db.length, ...JSON.parse(data.toString()));
-        stdoutWrite('Database updated');
+        // stdoutWrite('Database updated');
       }
-    } catch (error) {
-      stdoutWrite(`Error updating database: ${error}`);
-    }
+    });
   }
 });
 

@@ -23,7 +23,7 @@ describe('getUserByIdFromResponse', () => {
     const statusCode = 200;
     const users = [{
       id: '77658c22-11ff-4f04-a685-ad69182053f7',
-      username: 'test',
+      username: 'test_geUserById',
       age: 10,
       hobbies: [],
     }];

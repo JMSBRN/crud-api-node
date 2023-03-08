@@ -11,6 +11,7 @@ export const errorMessages: IErrorMessages = {
   userExist: { statusCode: 500, title: 'ERROR', message: 'User already exist' },
 };
 export const USER_CREATED_MSG = { message: 'User was created' };
+export const USER_UPDATED_MSG = { message: 'User was updated' };
 export const DEFAULT_HEADER = { 'Content-Type': 'application/json' };
 export enum StatusCode {
   'NOT_FOUND' = 404,

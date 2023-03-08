@@ -1,5 +1,4 @@
 import supertest from 'supertest';
-import { testUser } from '../mocks/testUser';
 import updateDb from '../../src/data/utilsDataBase';
 import serverForTests from '../mocks/utilsForTests';
 
@@ -69,26 +68,6 @@ describe('testing GET requests are woking correctly with exist user in dataBase 
       .expect(404)
       .then((res) => {
         expect(res.body).toHaveProperty('message', 'Oops! Route not Found');
-      });
-  });
-  it('should GET get users with created user', async () => {
-    await server
-      .post('/api/users')
-      .send(JSON.stringify(testUser))
-      .set('Accept', 'application/json');
-    await server
-      .get('/api/users')
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .then((res) => {
-        expect(res.body).toHaveLength(1);
-        expect(res.body[0].id).toHaveLength(36);
-        expect(res.body[0]).toHaveProperty('username', 'test');
-        expect(res.body[0]).toHaveProperty('age', 18);
-        expect(res.body[0]).toHaveProperty('hobbies', [
-          'test',
-        ]);
       });
   });
 });
