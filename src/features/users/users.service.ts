@@ -8,6 +8,7 @@ import {
   regexp,
   StatusCode,
   USER_CREATED_MSG,
+  USER_DELETE_MSG,
   USER_UPDATED_MSG,
 } from '../../constants';
 import { setCheckIsIUser } from '../../helpers';
@@ -131,7 +132,7 @@ export const deleteUserWIthResponse: RequestResponseWithUsers = async (req, res,
       users.splice(index, 1);
       updateDb(users);
       res.writeHead(StatusCode.NOT_CONTENT, DEFAULT_HEADER);
-      res.end(JSON.stringify(USER_CREATED_MSG));
+      res.end(JSON.stringify(USER_DELETE_MSG));
     } else {
       setResponseWithErrorMessage(StatusCode.NOT_FOUND, res, noUser);
     }

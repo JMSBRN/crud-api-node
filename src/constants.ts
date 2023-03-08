@@ -12,6 +12,7 @@ export const errorMessages: IErrorMessages = {
 };
 export const USER_CREATED_MSG = { message: 'User was created' };
 export const USER_UPDATED_MSG = { message: 'User was updated' };
+export const USER_DELETE_MSG = { message: 'User was deleted' };
 export const DEFAULT_HEADER = { 'Content-Type': 'application/json' };
 export enum StatusCode {
   'NOT_FOUND' = 404,
